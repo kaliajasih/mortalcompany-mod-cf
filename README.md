@@ -18,8 +18,7 @@ mortal-company-cf/
     ├── css/
     │   └── app.css            # Clean Light Mode styling & accessible typography
     ├── js/
-    │   ├── nrbf-parser.js     # Pure client-side [MS-NRBF] .NET Binary Remoting parser & serializer
-    │   └── default-save.js    # Built-in synthetic demo dataset (32 cargo items)
+    │   └── nrbf-parser.js     # Pure client-side [MS-NRBF] .NET Binary Remoting parser & serializer
     └── assets/
         ├── ship_transparent.png  # Spacecraft layout render
         └── ship_topdown.png      # Reference blueprint

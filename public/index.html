@@ -32,11 +32,8 @@
     <!-- Right Quick Actions -->
     <div class="flex items-center gap-2.5 font-mono text-xs">
       <input type="file" id="mainFileInput" class="hidden">
-      <button onclick="document.getElementById('mainFileInput').click()" class="smooth-btn px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold transition flex items-center gap-1.5 shadow-sm">
+      <button onclick="document.getElementById('mainFileInput').click()" class="smooth-btn px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold transition flex items-center gap-1.5 shadow-sm">
         <span>[UPLOAD SAVE]</span>
-      </button>
-      <button id="btnLoadDemo" onclick="loadDemoSave()" class="smooth-btn px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 transition">
-        [TRY DEMO]
       </button>
       <button id="btnUnloadSave" onclick="unloadSave()" class="smooth-btn px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-semibold transition hidden">
         [CLOSE / UNLOAD]
@@ -97,15 +94,12 @@
           <h3 class="font-bold text-lg text-slate-900 font-mono">NO SAVE FILE LOADED</h3>
         </div>
         <p class="text-xs text-slate-600 leading-relaxed">
-          This editor operates 100% in your local browser (Zero-Server Privacy). No game telemetry or save files are sent to external servers. Please upload your Android save file (<code class="text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded font-mono border border-amber-200">files8f5ef527ac12732ed56420</code>) from your mobile device to begin editing, or explore the interactive demo mode.
+          This editor operates 100% in your local browser (Zero-Server Privacy). No game telemetry or save files are sent to external servers. Please upload your Android save file (<code class="text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded font-mono border border-amber-200">files8f5ef527ac12732ed56420</code>) from your mobile device to begin editing.
         </p>
       </div>
       <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-        <button onclick="document.getElementById('mainFileInput').click()" class="smooth-btn px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold font-mono text-xs transition shadow-sm">
+        <button onclick="document.getElementById('mainFileInput').click()" class="smooth-btn px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold font-mono text-xs transition shadow-sm">
           [SELECT ANDROID SAVE FILE]
-        </button>
-        <button onclick="loadDemoSave()" class="smooth-btn px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-mono text-xs transition">
-          [EXPLORE DEMO PREVIEW]
         </button>
       </div>
       <div class="text-[11px] text-slate-500 font-mono pt-1">
@@ -113,7 +107,7 @@
       </div>
     </div>
 
-    <!-- WORKSPACE AREA (Hidden until save file is loaded or demo is clicked) -->
+    <!-- WORKSPACE AREA (Hidden until save file is uploaded) -->
     <div id="editorWorkspace" class="space-y-8 hidden">
 
       <!-- CORE FEATURE: COCKPIT ANCHOR DUPLICATION -->
@@ -386,7 +380,6 @@
   </footer>
 
   <!-- SCRIPT LOGIC -->
-  <script src="js/default-save.js"></script>
   <script src="js/nrbf-parser.js"></script>
   <script>
     let currentSave = null;
@@ -397,28 +390,6 @@
     // Load Save Data: Clean startup (NO AUTO-LOAD)
     function initSaveData() {
       currentSave = null;
-      renderUI();
-    }
-
-    // Demo preview loader: only called when user explicitly clicks [TRY DEMO]
-    function loadDemoSave() {
-      const demoData = window.DEFAULT_SAVE_DATA || window.DEMO_SAMPLE_SAVE;
-      if (!demoData) {
-        alert("Demo dataset is not available.");
-        return;
-      }
-      currentSave = JSON.parse(JSON.stringify(demoData));
-      currentSave.fileName = "DEMO_files8f5ef527ac";
-      hasTeleporter = !!currentSave.hasTeleporter;
-      hasInverse = !!currentSave.hasInverse;
-
-      // Auto-detect target item: prefer CANDY near Jetpack or Cockpit
-      for (let i = currentSave.items.length - 1; i >= 0; i--) {
-        if (currentSave.items[i].name.toUpperCase().includes('CANDY')) {
-          targetItemIndex = i;
-          break;
-        }
-      }
       renderUI();
     }
 
