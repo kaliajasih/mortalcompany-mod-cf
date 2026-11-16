@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mortal Company Mobile // Save Editor &amp; Duplicator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="bg-[#080c14] text-slate-200 min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
+
+  <!-- TOP APP BAR -->
+  <header class="border-b border-white/[0.08] bg-[#0c1220]/80 backdrop-blur-md sticky top-0 z-50 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="relative flex items-center justify-center">
+        <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping opacity-60 absolute"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#06b6d4]"></span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-mono font-bold text-sm tracking-wide text-cyan-400 uppercase">
+            MORTAL COMPANY // SAVE EDITOR &amp; DUPLICATOR
+          </span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 font-mono">v0.2.3 COMPATIBLE</span>
+        </div>
+        <p class="text-xs text-slate-400">Sistem Patokan Kokpit &bull; Zero Server &bull; 100% Client-Side Safe</p>
+      </div>
+    </div>
+
+    <!-- Right Quick Actions -->
+    <div class="flex items-center gap-2.5 font-mono text-xs">
+      <input type="file" id="mainFileInput" class="hidden">
+      <button onclick="document.getElementById('mainFileInput').click()" class="smooth-btn px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-white/[0.08] text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <span>[UNGGAH SAVE]</span>
+      </button>
+      <button id="btnReloadDefault" class="smooth-btn px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-white/[0.08] text-slate-300 hover:text-white transition">
+        [MUAT ULANG]
+      </button>
+      <button id="btnExportTop" class="smooth-btn px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold transition shadow-[0_4px_16px_rgba(245,158,11,0.25)] flex items-center gap-1.5">
+        <span>[UNDUH SAVE (8f5ef527...)]</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-8 space-y-8">
+
+    <!-- OVERVIEW TELEMETRY STATUS BAR -->
+    <div class="glass-card p-5">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs font-mono">
+        <div class="p-3 rounded-xl bg-slate-950/50 border border-white/[0.05]">
+          <div class="text-slate-400 text-[10px] uppercase">File Save Aktif</div>
+          <div class="text-cyan-300 font-bold text-sm mt-0.5 truncate" title="files8f5ef527ac12732ed56420">files8f5ef527...</div>
+          <div id="dispSaveDate" class="text-[10px] text-slate-500 mt-1">16.11.2026 05.44</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/50 border border-white/[0.05]">
+          <div class="text-slate-400 text-[10px] uppercase">Shop Money</div>
+          <div id="statMoney" class="text-amber-400 font-bold text-base mt-0.5">$2,085</div>
+          <div class="text-[10px] text-slate-500 mt-1">Saldo Toko Game</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/50 border border-white/[0.05]">
+          <div class="text-slate-400 text-[10px] uppercase">Target Quota</div>
+          <div id="statQuota" class="text-cyan-300 font-bold text-sm mt-0.5">0 / 320</div>
+          <div id="statDeadline" class="text-[10px] text-slate-500 mt-1">Sisa 2 Hari</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/50 border border-white/[0.05]">
+          <div class="text-slate-400 text-[10px] uppercase">Total Item Kargo</div>
+          <div id="statTotalItems" class="text-white font-bold text-base mt-0.5">32 Item</div>
+          <div class="text-[10px] text-slate-500 mt-1">Dalam Pesawat</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/50 border border-white/[0.05]">
+          <div class="text-slate-400 text-[10px] uppercase">Estimasi Nilai Scrap</div>
+          <div id="statScrapVal" class="text-emerald-400 font-bold text-sm mt-0.5">~$1,880</div>
+          <div class="text-[10px] text-slate-500 mt-1">Semua Barang Jual</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950/50 border border-white/[0.05]">
+          <div class="text-slate-400 text-[10px] uppercase">Upgrade Kapal</div>
+          <div id="statUpgrades" class="text-purple-300 font-bold text-xs mt-1 truncate">2 Teleporter Aktif</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">Regular + Inverse</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CORE FEATURE: PATOKAN DUPLIKASI KOKPIT -->
+    <div class="glass-card p-6 space-y-5 border-amber-500/20 relative overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <h2 class="font-bold text-base text-white tracking-wide">
+              SISTEM DUPLIKASI ITEM (PATOKAN AREA KOKPIT)
+            </h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">PATOKAN SIMPEL</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Cukup bawa item yang ingin Anda gandakan ke area <strong>Kokpit</strong> (dekat kemudi/jendela depan) di dalam game, lalu gunakan tombol di bawah untuk menggandakannya secara instan.
+          </p>
+        </div>
+        <div class="text-right">
+          <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/50 px-3 py-1.5 rounded-xl border border-cyan-800/40">
+            Titik Koordinat Patokan Kokpit: X=31.40, Y=22.38, Z=33.80
+          </span>
+        </div>
+      </div>
+
+      <!-- Target Item Card -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+        <!-- Target Info -->
+        <div class="md:col-span-6 p-4 rounded-xl bg-slate-950/70 border border-white/[0.08] space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-mono">TARGET ITEM SAAT INI:</span>
+            <span id="targetItemBadge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-emerald-500/40 text-emerald-300 bg-emerald-950/30">CONSUMABLE</span>
+          </div>
+          <div class="flex items-baseline gap-3">
+            <div id="targetItemName" class="text-xl font-bold font-mono text-amber-400">CANDY (Item #32)</div>
+            <div id="targetItemValue" class="text-xs text-emerald-400 font-mono">Est: $15</div>
+          </div>
+          <div class="text-xs text-slate-400 font-mono space-y-0.5">
+            <div>Koordinat: <span id="targetItemCoords" class="text-slate-200">X: 40.81 m, Y: 21.17 m, Z: 29.29 m</span></div>
+            <div>Posisi Relatif: <span id="targetItemNote" class="text-amber-300">Dekat Jetpack #1</span></div>
+          </div>
+        </div>
+
+        <!-- Multiplier Buttons -->
+        <div class="md:col-span-6 space-y-3">
+          <div class="text-xs text-slate-400 font-mono">PILIH JUMLAH DUPLIKASI:</div>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button onclick="cloneTargetItem(10)" class="smooth-btn py-3 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-white/[0.1] text-center transition">
+              <div class="font-bold font-mono text-sm text-cyan-300">+10x</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">Tambah 10 Item</div>
+            </button>
+            <button onclick="cloneTargetItem(50)" class="smooth-btn py-3 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-center transition">
+              <div class="font-bold font-mono text-sm text-amber-300">+50x</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">Rekomendasi Aman</div>
+            </button>
+            <button onclick="cloneTargetItem(100)" class="smooth-btn py-3 px-3 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-center transition">
+              <div class="font-bold font-mono text-sm text-purple-300">+100x</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">Tumpukan Penuh</div>
+            </button>
+          </div>
+
+          <!-- Quick Item Selection Chips -->
+          <div class="pt-1 flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
+            <span class="text-slate-500 mr-1">Pilih Cepat Target:</span>
+            <button onclick="setTargetItemByName('CANDY')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Candy</button>
+            <button onclick="setTargetItemByName('JETPACK')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Jetpack</button>
+            <button onclick="setTargetItemByName('APPARATUS')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Apparatus</button>
+            <button onclick="setTargetItemByName('PRO TORCH')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Pro Torch</button>
+            <button onclick="setTargetItemByName('STOP SIGN')" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Stop Sign</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BASIC GAME PARAMETERS (UANG, KUOTA, DEADLINE, UPGRADE) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Shop Money Card -->
+      <div class="lg:col-span-6 glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <h3 class="font-bold text-sm text-white tracking-wide">UANG TOKO (SHOP MONEY)</h3>
+          <span class="text-xs text-amber-400 font-mono">Saldo Saat Ini</span>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-mono text-slate-400">$</span>
+            <input type="number" id="inputMoney" value="2085" class="smooth-input flex-1 text-lg font-bold text-amber-300 focus:border-amber-400">
+          </div>
+          <div class="grid grid-cols-3 gap-2 font-mono text-xs">
+            <button onclick="addMoney(500)" class="smooth-btn py-2 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-white/[0.08] text-slate-200">+$500</button>
+            <button onclick="addMoney(1000)" class="smooth-btn py-2 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-white/[0.08] text-slate-200">+$1,000</button>
+            <button onclick="setMoney(9999)" class="smooth-btn py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold">MAX (9999)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quota & Deadline Card -->
+      <div class="lg:col-span-6 glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <h3 class="font-bold text-sm text-white tracking-wide">KUOTA &amp; DEADLINE HARI</h3>
+          <span class="text-xs text-cyan-400 font-mono">Perusahaan (The Company)</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div>
+            <label class="text-slate-400 block mb-1">TERKUMPUL / TARGET:</label>
+            <div class="flex items-center gap-1.5">
+              <input type="number" id="inputCollected" value="0" class="smooth-input w-20 text-center text-cyan-300">
+              <span class="text-slate-500 font-bold">/</span>
+              <input type="number" id="inputTarget" value="320" class="smooth-input w-24 text-center text-cyan-300">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">SISA HARI (DEADLINE):</label>
+            <select id="selectDays" class="smooth-input w-full">
+              <option value="0">0 Hari (Hari Evaluasi)</option>
+              <option value="1">1 Hari Tersisa</option>
+              <option value="2" selected>2 Hari Tersisa</option>
+              <option value="3">3 Hari Tersisa</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Teleporters Toggle -->
+        <div class="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono">
+          <span class="text-slate-400">UPGRADE KAPAL:</span>
+          <div class="flex items-center gap-3">
+            <button id="btnToggleTeleporter" class="smooth-btn px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 text-cyan-200 flex items-center gap-1.5 transition">
+              <span id="dotTeleporter" class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <span>Teleporter</span>
+            </button>
+            <button id="btnToggleInverse" class="smooth-btn px-3 py-1.5 rounded-lg border border-purple-500/40 bg-purple-950/40 text-purple-200 flex items-center gap-1.5 transition">
+              <span id="dotInverse" class="w-2 h-2 rounded-full bg-purple-400"></span>
+              <span>Inverse Teleporter</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CARGO INVENTORY MANIFEST TABLE -->
+    <div class="glass-card p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+        <div>
+          <h3 class="font-bold text-sm text-white tracking-wide">DAFTAR SEMUA ITEM KARGO</h3>
+          <p class="text-xs text-slate-400">Semua item scrap dan perlengkapan aktif yang tersimpan di dalam pesawat.</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <input type="text" id="manifestSearch" placeholder="Cari item..." class="smooth-input py-1.5 px-3 text-xs w-44">
+          <select id="manifestCategoryFilter" class="smooth-input py-1.5 px-3 text-xs">
+            <option value="ALL">Semua Kategori</option>
+            <option value="HIGH_VALUE">High Value</option>
+            <option value="VALUABLE">Valuable</option>
+            <option value="SCRAP">Scrap</option>
+            <option value="CONSUMABLE">Consumable / Candy</option>
+            <option value="EQUIPMENT">Equipment / Jetpack</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="max-h-80 overflow-y-auto rounded-xl border border-white/[0.06] bg-slate-950/40 divide-y divide-white/[0.04]">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-slate-900/90 text-slate-400 sticky top-0 border-b border-white/[0.06] text-[11px]">
+            <tr>
+              <th class="py-2.5 px-3 w-12 text-slate-500">#</th>
+              <th class="py-2.5 px-3 w-32">Kategori</th>
+              <th class="py-2.5 px-3">Nama Item</th>
+              <th class="py-2.5 px-3 text-right">Estimasi Nilai</th>
+              <th class="py-2.5 px-3 text-center">Posisi Koordinat</th>
+              <th class="py-2.5 px-3 text-center w-36">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="manifestTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PANDUAN SAVE DATA ANDROID -->
+    <div class="glass-card p-6 space-y-5">
+      <div class="border-b border-white/[0.06] pb-3 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base text-white tracking-wide">PANDUAN MENGAMBIL &amp; MENGINJECT SAVE DATA ANDROID</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Langkah mudah mengekstrak file save dari HP ke website lalu mengembalikannya ke game.</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-2 text-xs font-mono">
+        <button id="guideTab1" onclick="switchGuideTab(1)" class="smooth-btn px-4 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition">
+          Metode 1: ZArchiver + Shizuku (Tanpa PC / Tanpa Root)
+        </button>
+        <button id="guideTab2" onclick="switchGuideTab(2)" class="smooth-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white transition">
+          Metode 2: Kabel USB + Laptop / PC (ADB)
+        </button>
+        <button id="guideTab3" onclick="switchGuideTab(3)" class="smooth-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white transition">
+          Metode 3: Cara Mengembalikan (Restore) Save ke HP
+        </button>
+      </div>
+
+      <!-- Content Tab 1 -->
+      <div id="guideContent1" class="p-5 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-3 text-xs leading-relaxed text-slate-300">
+        <div class="text-cyan-400 font-bold font-mono text-sm">[METODE REKOMENDASI] Bekerja di Android 11, 12, 13, 14, 15</div>
+        <ol class="space-y-2.5 list-decimal list-inside text-slate-300">
+          <li><strong>Install Shizuku:</strong> Unduh aplikasi Shizuku dari Google Play Store di HP Anda.</li>
+          <li><strong>Aktifkan Wireless Debugging:</strong> Di Opsi Pengembang (Developer Options) HP, aktifkan "Wireless Debugging" dan pairing dengan kode 6-digit ke Shizuku, lalu tekan "Start".</li>
+          <li><strong>Buka Izin di ZArchiver:</strong> Di ZArchiver &gt; Pengaturan &gt; Root/Akses &gt; pilih jenis akses "Shizuku".</li>
+          <li><strong>Buka Folder Save:</strong> Buka <code class="text-cyan-300 font-mono bg-slate-900 px-1 py-0.5 rounded">/Android/data/com.AlexKosDev.lethal.company.mobile/files/</code></li>
+          <li><strong>Salin Save:</strong> Cari file bernama <code class="text-amber-300 font-mono">files8f5ef527ac12732ed56420</code> dan salin ke folder Download, lalu upload ke website ini.</li>
+        </ol>
+      </div>
+
+      <!-- Content Tab 2 -->
+      <div id="guideContent2" class="p-5 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-3 text-xs leading-relaxed text-slate-300 hidden">
+        <div class="text-amber-400 font-bold font-mono text-sm">[METODE KABEL USB / ADB] Via Komputer / Laptop</div>
+        <p>Sambungkan HP ke laptop dengan kabel data, nyalakan USB Debugging, lalu jalankan perintah ADB di PowerShell / Terminal:</p>
+        <div class="p-3 rounded-lg bg-black text-emerald-400 font-mono select-all">
+          adb pull /sdcard/Android/data/com.AlexKosDev.lethal.company.mobile/files/files8f5ef527ac12732ed56420 .
+        </div>
+      </div>
+
+      <!-- Content Tab 3 -->
+      <div id="guideContent3" class="p-5 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-3 text-xs leading-relaxed text-slate-300 hidden">
+        <div class="text-emerald-400 font-bold font-mono text-sm">[RESTORE / INJECT HASIL EDIT KE HP]</div>
+        <ol class="space-y-2 list-decimal list-inside text-slate-300">
+          <li>Klik tombol kuning <strong>[UNDUH SAVE (8f5ef527...)]</strong> di bagian atas website ini.</li>
+          <li>Cadangkan file asli di HP Anda dengan menambahkan akhiran <code class="font-mono text-slate-400">.bak</code>.</li>
+          <li>Pindahkan file hasil unduhan ke dalam folder:
+            <div class="p-2 rounded bg-black text-cyan-300 font-mono mt-1">/Android/data/com.AlexKosDev.lethal.company.mobile/files/files8f5ef527ac12732ed56420</div>
+          </li>
+          <li>Buka game <strong>Mortal Company Mobile</strong> di HP, pilih <em>Continue</em>, dan item duplikat serta uang Anda langsung aktif!</li>
+        </ol>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/[0.06] bg-[#0c1220] py-6 px-6 text-center text-xs text-slate-500 font-mono">
+    Mortal Company Mobile Save Suite &bull; Patokan Kokpit System &bull; Smooth Client-Side Architecture
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script src="js/default-save.js"></script>
+  <script src="js/nrbf-parser.js"></script>
+  <script>
+    let currentSave = null;
+    let targetItemIndex = 31; // Default to the isolated Candy near Jetpack (Item #31)
+
+    // Load Save Data
+    function initSaveData() {
+      const saved = sessionStorage.getItem('MORTAL_CUSTOM_SAVE');
+      if (saved) {
+        try {
+          currentSave = JSON.parse(saved);
+        } catch (e) {
+          currentSave = JSON.parse(JSON.stringify(window.DEFAULT_SAVE_DATA));
+        }
+      } else {
+        currentSave = JSON.parse(JSON.stringify(window.DEFAULT_SAVE_DATA));
+      }
+
+      // Auto-detect target item: prefer CANDY near Jetpack or Cockpit
+      for (let i = currentSave.items.length - 1; i >= 0; i--) {
+        if (currentSave.items[i].name.toUpperCase().includes('CANDY')) {
+          targetItemIndex = i;
+          break;
+        }
+      }
+
+      renderUI();
+    }
+
+    const ITEM_VALUES = {
+      'APPARATUS': { val: 80, cat: 'HIGH_VALUE', color: '#a855f7' },
+      'JETPACK': { val: 700, cat: 'EQUIPMENT', color: '#06b6d4' },
+      'PRO TORCH': { val: 25, cat: 'EQUIPMENT', color: '#38bdf8' },
+      'BRASS BELL': { val: 60, cat: 'VALUABLE', color: '#f59e0b' },
+      'RUBBER DUCK': { val: 50, cat: 'VALUABLE', color: '#06b6d4' },
+      'BIG GEAR': { val: 40, cat: 'SCRAP', color: '#eab308' },
+      'STOP SIGN': { val: 35, cat: 'WEAPON', color: '#ef4444' },
+      'KETTLE': { val: 32, cat: 'SCRAP', color: '#3b82f6' },
+      'BOTTLES': { val: 28, cat: 'SCRAP', color: '#10b981' },
+      'GEAR': { val: 25, cat: 'SCRAP', color: '#f97316' },
+      'CLOWN HORN': { val: 20, cat: 'FUN', color: '#ec4899' },
+      'BOLT': { val: 18, cat: 'SCRAP', color: '#64748b' },
+      'CANDY': { val: 15, cat: 'CONSUMABLE', color: '#10b981' },
+      'CUP': { val: 12, cat: 'SCRAP', color: '#94a3b8' }
+    };
+
+    function getItemMeta(name) {
+      const upper = (name || '').toUpperCase().trim();
+      for (const [key, val] of Object.entries(ITEM_VALUES)) {
+        if (upper.includes(key)) return val;
+      }
+      return { val: 20, cat: 'SCRAP', color: '#38bdf8' };
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, function(s) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s];
+      });
+    }
+
+    function renderUI() {
+      if (!currentSave) return;
+
+      // Stats
+      document.getElementById('statMoney').innerText = `$${(currentSave.shopMoney || 0).toLocaleString()}`;
+      document.getElementById('statQuota').innerText = `${currentSave.collectedQuota || 0} / ${currentSave.targetQuota || 320}`;
+      document.getElementById('statDeadline').innerText = `Sisa ${currentSave.remainingDays !== undefined ? currentSave.remainingDays : 2} Hari`;
+      document.getElementById('statTotalItems').innerText = `${currentSave.items.length} Item`;
+
+      let totalVal = 0;
+      currentSave.items.forEach(it => { totalVal += getItemMeta(it.name).val; });
+      document.getElementById('statScrapVal').innerText = `~$${totalVal.toLocaleString()}`;
+
+      // Inputs
+      document.getElementById('inputMoney').value = currentSave.shopMoney || 0;
+      document.getElementById('inputCollected').value = currentSave.collectedQuota || 0;
+      document.getElementById('inputTarget').value = currentSave.targetQuota || 320;
+      document.getElementById('selectDays').value = currentSave.remainingDays !== undefined ? currentSave.remainingDays : 2;
+
+      // Teleporters
+      updateTeleporterUI();
+
+      // Target Item Card
+      renderTargetItem();
+
+      // Manifest Table
+      renderManifest();
+    }
+
+    function renderTargetItem() {
+      const it = currentSave.items[targetItemIndex];
+      if (!it) return;
+
+      const meta = getItemMeta(it.name);
+      document.getElementById('targetItemName').innerText = `${it.name} (Item #${targetItemIndex + 1})`;
+      document.getElementById('targetItemValue').innerText = `Nilai: ~$${meta.val}`;
+      document.getElementById('targetItemBadge').innerText = meta.cat;
+      document.getElementById('targetItemBadge').style.borderColor = meta.color;
+      document.getElementById('targetItemBadge').style.color = meta.color;
+      document.getElementById('targetItemCoords').innerText = `X: ${it.x.toFixed(2)} m, Y: ${it.y.toFixed(2)} m, Z: ${it.z.toFixed(2)} m`;
+
+      // Relative description
+      let note = "Area Kargo Kapal";
+      if (it.x > 36.0 && it.z < 31.0) note = "Dekat Jetpack / Luar Sayap";
+      else if (it.z >= 33.0) note = "Area Kokpit / Kemudi Depan (Patokan Ideal)";
+      else if (it.x < 31.2 && it.z <= 31.5) note = "Rak Penyimpanan Port";
+      document.getElementById('targetItemNote').innerText = note;
+    }
+
+    function cloneTargetItem(count) {
+      const it = currentSave.items[targetItemIndex];
+      if (!it) return;
+
+      for (let i = 0; i < count; i++) {
+        currentSave.items.push({
+          id: currentSave.items.length,
+          name: it.name,
+          x: it.x,
+          y: it.y,
+          z: it.z,
+          rx: it.rx || 0,
+          ry: it.ry || 0,
+          rz: it.rz || 0
+        });
+      }
+
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+      alert(`Berhasil menambahkan +${count}x ${it.name}!\nTotal item di kapal sekarang: ${currentSave.items.length}`);
+    }
+
+    function setTargetItemByName(name) {
+      for (let i = currentSave.items.length - 1; i >= 0; i--) {
+        if (currentSave.items[i].name.toUpperCase().includes(name)) {
+          targetItemIndex = i;
+          renderTargetItem();
+          break;
+        }
+      }
+    }
+
+    function selectAsTarget(idx) {
+      targetItemIndex = idx;
+      renderTargetItem();
+      window.scrollTo({ top: 180, behavior: 'smooth' });
+    }
+
+    function renderManifest() {
+      const tbody = document.getElementById('manifestTableBody');
+      tbody.innerHTML = '';
+
+      const query = document.getElementById('manifestSearch').value.toUpperCase();
+      const filterCat = document.getElementById('manifestCategoryFilter').value;
+
+      currentSave.items.forEach((it, idx) => {
+        const meta = getItemMeta(it.name);
+        if (query && !it.name.toUpperCase().includes(query)) return;
+        if (filterCat !== 'ALL' && meta.cat !== filterCat) return;
+
+        const isTarget = idx === targetItemIndex;
+        const tr = document.createElement('tr');
+        tr.className = `transition hover:bg-slate-800/50 ${isTarget ? 'bg-amber-500/10 font-bold' : ''}`;
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-500">${idx + 1}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold border" style="border-color: ${meta.color}50; color: ${meta.color}; background: ${meta.color}15">
+              ${escapeHtml(meta.cat)}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 font-medium text-slate-200">
+            ${escapeHtml(it.name)} ${isTarget ? '<span class="text-[10px] text-amber-400 font-bold ml-1">[TARGET PATOKAN]</span>' : ''}
+          </td>
+          <td class="py-2.5 px-3 text-right text-emerald-400 font-mono">~$${meta.val}</td>
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono text-[11px]">
+            (${it.x.toFixed(2)}, ${it.y.toFixed(2)}, ${it.z.toFixed(2)})
+          </td>
+          <td class="py-2.5 px-3 text-center space-x-1.5">
+            <button onclick="selectAsTarget(${idx})" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]">Pilih Patokan</button>
+            <button onclick="duplicateSingle(${idx})" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]">+1</button>
+            <button onclick="deleteSingle(${idx})" class="px-2 py-1 rounded bg-rose-950/40 hover:bg-rose-900 text-rose-300 text-[10px]">Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function duplicateSingle(idx) {
+      const it = currentSave.items[idx];
+      currentSave.items.push(JSON.parse(JSON.stringify(it)));
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    }
+
+    function deleteSingle(idx) {
+      if (currentSave.items.length <= 1) {
+        alert('Minimal harus ada 1 item di kapal.');
+        return;
+      }
+      currentSave.items.splice(idx, 1);
+      targetItemIndex = Math.min(targetItemIndex, currentSave.items.length - 1);
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    }
+
+    // Money & Quota Event Handlers
+    document.getElementById('inputMoney').onchange = (e) => {
+      currentSave.shopMoney = parseInt(e.target.value) || 0;
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    };
+    function addMoney(amount) {
+      currentSave.shopMoney = (currentSave.shopMoney || 0) + amount;
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    }
+    function setMoney(amount) {
+      currentSave.shopMoney = amount;
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    }
+
+    document.getElementById('inputCollected').onchange = (e) => {
+      currentSave.collectedQuota = parseInt(e.target.value) || 0;
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    };
+    document.getElementById('inputTarget').onchange = (e) => {
+      currentSave.targetQuota = parseInt(e.target.value) || 0;
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    };
+    document.getElementById('selectDays').onchange = (e) => {
+      currentSave.remainingDays = parseInt(e.target.value) || 0;
+      sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(currentSave));
+      renderUI();
+    };
+
+    // Teleporters
+    let hasTeleporter = true;
+    let hasInverse = true;
+    function updateTeleporterUI() {
+      const dotT = document.getElementById('dotTeleporter');
+      const btnT = document.getElementById('btnToggleTeleporter');
+      dotT.className = `w-2 h-2 rounded-full ${hasTeleporter ? 'bg-cyan-400 shadow-[0_0_8px_#06b6d4]' : 'bg-slate-600'}`;
+      btnT.className = `smooth-btn px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition ${hasTeleporter ? 'border-cyan-500/40 bg-cyan-950/40 text-cyan-200' : 'border-white/[0.08] bg-slate-900 text-slate-400'}`;
+
+      const dotI = document.getElementById('dotInverse');
+      const btnI = document.getElementById('btnToggleInverse');
+      dotI.className = `w-2 h-2 rounded-full ${hasInverse ? 'bg-purple-400 shadow-[0_0_8px_#a855f7]' : 'bg-slate-600'}`;
+      btnI.className = `smooth-btn px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition ${hasInverse ? 'border-purple-500/40 bg-purple-950/40 text-purple-200' : 'border-white/[0.08] bg-slate-900 text-slate-400'}`;
+    }
+
+    document.getElementById('btnToggleTeleporter').onclick = () => {
+      hasTeleporter = !hasTeleporter;
+      updateTeleporterUI();
+    };
+    document.getElementById('btnToggleInverse').onclick = () => {
+      hasInverse = !hasInverse;
+      updateTeleporterUI();
+    };
+
+    // Filter Listeners
+    document.getElementById('manifestSearch').oninput = renderManifest;
+    document.getElementById('manifestCategoryFilter').onchange = renderManifest;
+
+    // File Upload Handler
+    document.getElementById('mainFileInput').onchange = (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          try {
+            const parsed = NrbfSaveManager.parse(re.target.result);
+            currentSave = parsed;
+            sessionStorage.setItem('MORTAL_CUSTOM_SAVE', JSON.stringify(parsed));
+            targetItemIndex = 0;
+            renderUI();
+            alert(`File ${file.name} berhasil dimuat! Ditemukan ${parsed.items.length} item.`);
+          } catch (err) {
+            alert(`Gagal memuat save file: ${err.message}`);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    };
+
+    document.getElementById('btnReloadDefault').onclick = () => {
+      sessionStorage.removeItem('MORTAL_CUSTOM_SAVE');
+      initSaveData();
+      alert('Save data berhasil dimuat ulang ke data bawaan (32 item)!');
+    };
+
+    // Export Functionality
+    document.getElementById('btnExportTop').onclick = () => {
+      try {
+        const blob = NrbfSaveManager.serialize(currentSave, { hasTeleporter, hasInverse });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = '8f5ef527ac12732ed56420';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        alert(`Save file berhasil diekspor!\nUkuran: ${blob.size} bytes\nNama: 8f5ef527ac12732ed56420\n\nPindahkan file ini ke /Android/data/com.AlexKosDev.lethal.company.mobile/files/`);
+      } catch (err) {
+        alert(`Gagal mengekspor save: ${err.message}`);
+      }
+    };
+
+    // Guide Tab Switcher
+    function switchGuideTab(idx) {
+      for (let i = 1; i <= 3; i++) {
+        const tab = document.getElementById('guideTab' + i);
+        const content = document.getElementById('guideContent' + i);
+        if (i === idx) {
+          tab.className = "smooth-btn px-4 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition";
+          content.classList.remove('hidden');
+        } else {
+          tab.className = "smooth-btn px-4 py-2 rounded-xl text-slate-400 hover:text-white transition";
+          content.classList.add('hidden');
+        }
+      }
+    }
+
+    // Initialize
+    initSaveData();
+  </script>
+</body>
+</html>

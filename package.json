@@ -1,0 +1,21 @@
+{
+  "name": "mortal-company-web",
+  "version": "1.0.0",
+  "description": "Mortal Company Mobile Save Visualizer & Cloudflare Pages/Worker Suite",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^3.80.0"
+  },
+  "keywords": [
+    "mortal-company",
+    "lethal-company",
+    "save-editor",
+    "cloudflare-pages",
+    "worker"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}

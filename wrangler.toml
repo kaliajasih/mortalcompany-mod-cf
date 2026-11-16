@@ -1,0 +1,14 @@
+# Cloudflare Pages / Worker Configuration for Mortal Company Ship Visualizer & Save Editor
+name = "mortal-company-visualizer"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
+
+# Observability
+[observability]
+enabled = true
+
+[vars]
+ENVIRONMENT = "production"
+APP_NAME = "Mortal Company Telemetry & Save Editor"
+GAME_VERSION = "v0.2.3"
