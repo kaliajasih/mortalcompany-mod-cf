@@ -1,4 +1,5 @@
-window.DEFAULT_SAVE_DATA = {
+// Generic demo sample dataset for preview/testing; NOT auto-loaded on site visit.
+window.DEMO_SAMPLE_SAVE = window.DEFAULT_SAVE_DATA = {
   "shopMoney": 2085,
   "collectedQuota": 0,
   "targetQuota": 320,

@@ -9,7 +9,8 @@ const SECURITY_HEADERS = {
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
-  'Cross-Origin-Opener-Policy': 'same-origin'
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cache-Control': 'public, max-age=0, must-revalidate'
 };
 
 function addSecurityHeaders(response) {
@@ -52,8 +53,8 @@ export default {
         }
 
         const bytes = new Uint8Array(arrayBuffer);
-        // Check MS-NRBF binary header [0x00, 0x00, 0x00, 0x00, 0x01, ...]
-        const isNrbf = bytes[0] === 0x00 && bytes[4] === 0x01 && bytes[12] === 0x01;
+        // Check MS-NRBF binary header [0x00, 0x01, 0x00, 0x00, 0x00, ...]
+        const isNrbf = bytes[0] === 0x00 && bytes[1] === 0x01 && bytes[2] === 0x00 && bytes[3] === 0x00;
         
         return addSecurityHeaders(new Response(JSON.stringify({
           valid: isNrbf,

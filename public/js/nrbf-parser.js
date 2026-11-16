@@ -184,7 +184,7 @@ class NrbfSaveManager {
       hasTeleporter: hasTeleporter,
       hasInverse: hasInverse,
       saveDate: saveDate,
-      items: items.length > 0 ? items : (window.DEFAULT_SAVE_DATA ? window.DEFAULT_SAVE_DATA.items : [])
+      items: items
     };
   }
 
