@@ -61,12 +61,16 @@ class NrbfSaveManager {
     // Read SaveDate string
     // Format: 0x06 (String), 4-byte ObjectId, 1-byte length, then chars
     let saveDate = "15.11.2026 14:49";
-    if (u8[offset] === 0x06) {
+    if (offset < u8.length && u8[offset] === 0x06) {
       offset += 1 + 4;
-      const strLen = u8[offset++];
-      let str = "";
-      for (let s = 0; s < strLen; s++) str += String.fromCharCode(u8[offset++]);
-      saveDate = str;
+      if (offset < u8.length) {
+        const strLen = u8[offset++];
+        if (strLen > 0 && offset + strLen <= u8.length && strLen < 128) {
+          let str = "";
+          for (let s = 0; s < strLen; s++) str += String.fromCharCode(u8[offset++]);
+          saveDate = str;
+        }
+      }
     }
 
     // Skip MemberReferences to objects
@@ -194,7 +198,13 @@ class NrbfSaveManager {
     const hasTeleporter = !!options.hasTeleporter;
     const hasInverse = !!options.hasInverse;
 
-    const buffer = new ArrayBuffer(10000 + count * 60);
+    // Dynamically calculate exact required buffer size to prevent buffer overflow
+    let totalNameBytes = 0;
+    for (let it of items) {
+      totalNameBytes += 6 + (it.name || 'SCRAP').length;
+    }
+    const bufferSize = Math.max(16384, 10000 + count * 40 + totalNameBytes);
+    const buffer = new ArrayBuffer(bufferSize);
     const view = new DataView(buffer);
     const u8 = new Uint8Array(buffer);
     let p = 0;

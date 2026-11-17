@@ -45,20 +45,24 @@
   </header>
 
   <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-8 space-y-8">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
 
     <!-- OVERVIEW TELEMETRY STATUS BAR -->
-    <div class="light-card p-5">
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs font-mono">
+    <div class="light-card p-4 sm:p-5">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 text-xs font-mono">
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
           <div class="text-slate-500 text-[10px] uppercase font-semibold">Active Save File</div>
           <div id="dispActiveFile" class="text-slate-600 font-bold text-sm mt-0.5 truncate">[No File Loaded]</div>
           <div id="dispSaveDate" class="text-[10px] text-slate-400 mt-1">Standby</div>
         </div>
-        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-          <div class="text-slate-500 text-[10px] uppercase font-semibold">Store Credits</div>
-          <div id="statMoney" class="text-slate-600 font-bold text-base mt-0.5">--</div>
-          <div class="text-[10px] text-slate-400 mt-1">In-Game Terminal Cash</div>
+        <!-- STORE CREDITS: PROMINENT VISIBILITY ON MOBILE & DESKTOP -->
+        <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200 shadow-xs">
+          <div class="text-amber-800 text-[10px] uppercase font-bold flex items-center justify-between">
+            <span>Store Credits</span>
+            <span class="text-[9px] font-mono text-amber-800 bg-amber-100 px-1 rounded border border-amber-200">CASH</span>
+          </div>
+          <div id="statMoney" class="text-amber-900 font-bold text-lg mt-0.5">--</div>
+          <div class="text-[10px] text-amber-700/80 mt-1">In-Game Terminal Cash</div>
         </div>
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
           <div class="text-slate-500 text-[10px] uppercase font-semibold">Profit Quota</div>
@@ -226,37 +230,37 @@
       <!-- BASIC GAME PARAMETERS (CREDITS, QUOTA, DEADLINE, UPGRADES) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Shop Credits Card -->
-        <div class="lg:col-span-6 light-card p-5 space-y-4 bg-white">
+        <!-- Shop Credits Card: Mobile Optimized -->
+        <div class="lg:col-span-6 light-card p-4 sm:p-5 space-y-4 bg-white">
           <div class="flex items-center justify-between border-b border-slate-200 pb-3">
             <div>
               <h3 class="font-bold text-sm text-slate-900 tracking-wide font-mono">STORE CREDITS (SHOP MONEY)</h3>
               <p class="text-xs text-slate-500">Edit available terminal cash balance to purchase tools and equipment.</p>
             </div>
-            <span class="text-xs font-mono text-amber-700 font-bold">$USD</span>
+            <span class="text-xs font-mono text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">$USD CASH</span>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="relative flex-1">
-              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-slate-400 font-bold">$</span>
-              <input type="number" id="inputMoney" min="0" max="999999" class="smooth-input pl-8 py-2.5 w-full font-mono font-bold text-slate-900 text-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div class="relative w-full sm:flex-1">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-slate-400 font-bold text-lg">$</span>
+              <input type="number" id="inputMoney" min="0" max="999999" class="smooth-input pl-9 pr-3 py-2.5 sm:py-3 w-full font-mono font-bold text-slate-900 text-lg sm:text-xl tracking-wide" placeholder="0">
             </div>
-            <div class="flex items-center gap-1.5 font-mono text-xs">
-              <button onclick="addMoney(500)" class="smooth-btn px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200">+500</button>
-              <button onclick="addMoney(1000)" class="smooth-btn px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200">+1,000</button>
-              <button onclick="setMoney(9999)" class="smooth-btn px-3 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 font-bold hover:bg-amber-100">Max 9999</button>
+            <div class="grid grid-cols-3 sm:flex items-center gap-2 font-mono text-xs w-full sm:w-auto">
+              <button onclick="addMoney(500)" class="smooth-btn py-2 sm:py-2.5 px-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 text-center font-bold">+500</button>
+              <button onclick="addMoney(1000)" class="smooth-btn py-2 sm:py-2.5 px-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 text-center font-bold">+1,000</button>
+              <button onclick="setMoney(9999)" class="smooth-btn py-2 sm:py-2.5 px-3 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 font-bold hover:bg-amber-100 text-center">Max 9999</button>
             </div>
           </div>
         </div>
 
         <!-- Profit Quota & Deadline Card -->
-        <div class="lg:col-span-6 light-card p-5 space-y-4 bg-white">
+        <div class="lg:col-span-6 light-card p-4 sm:p-5 space-y-4 bg-white">
           <div class="flex items-center justify-between border-b border-slate-200 pb-3">
             <div>
               <h3 class="font-bold text-sm text-slate-900 tracking-wide font-mono">PROFIT QUOTA &amp; DEADLINE</h3>
               <p class="text-xs text-slate-500">Configure collected quota, company profit target, and deadline days.</p>
             </div>
           </div>
-          <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
             <div>
               <label class="text-slate-500 text-[10px] block mb-1 font-semibold">COLLECTED</label>
               <input type="number" id="inputCollected" min="0" class="smooth-input py-2 px-3 w-full font-bold text-sky-700">
@@ -300,45 +304,55 @@
       </div>
 
       <!-- CARGO INVENTORY MANIFEST TABLE & BULK CONTROLS -->
-      <div class="light-card p-6 space-y-4 bg-white">
+      <div class="light-card p-4 sm:p-6 space-y-4 bg-white">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div>
-            <h3 class="font-bold text-sm text-slate-900 tracking-wide font-mono">SHIP CARGO MANIFEST</h3>
-            <p class="text-xs text-slate-500">Complete inventory of salvage scrap and active equipment aboard the spacecraft.</p>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-sm text-slate-900 tracking-wide font-mono">SHIP CARGO MANIFEST</h3>
+              <span id="manifestTotalBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-bold">0 Items</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Filter by category to inspect, duplicate, or delete specific item types.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
-            <input type="text" id="manifestSearch" placeholder="Search items..." class="smooth-input py-1.5 px-3 text-xs w-36">
-            <select id="manifestCategoryFilter" class="smooth-input py-1.5 px-3 text-xs">
+            <input type="text" id="manifestSearch" placeholder="Search items..." class="smooth-input py-1.5 px-3 text-xs w-32 sm:w-36">
+            <select id="manifestCategoryFilter" onchange="onCategoryFilterChanged()" class="smooth-input py-1.5 px-3 text-xs">
               <option value="ALL">All Categories</option>
+              <option value="CONSUMABLE">Consumable / Candy</option>
+              <option value="EQUIPMENT">Equipment / Jetpack</option>
               <option value="HIGH_VALUE">High Value</option>
               <option value="VALUABLE">Valuable</option>
               <option value="SCRAP">Scrap</option>
-              <option value="CONSUMABLE">Consumable / Candy</option>
-              <option value="EQUIPMENT">Equipment / Jetpack</option>
             </select>
-            <button onclick="autoSpreadOverlaps()" class="smooth-btn px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-800 font-semibold" title="Auto-distribute overlapping items across cabin floor to prevent in-game despawn">
+            <button onclick="autoSpreadOverlaps()" class="smooth-btn px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-800 font-semibold" title="Auto-distribute overlapping items across cabin floor">
               [Auto-Spread]
             </button>
             <button onclick="removeAllDuplicates()" class="smooth-btn px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold" title="Keep 1 of each unique item and remove extra copies">
               [Deduplicate]
             </button>
-            <button onclick="deleteAllCargo()" class="smooth-btn px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm" title="Delete all items from ship inventory">
-              [DELETE ALL]
+            <!-- CATEGORY TARGETED DELETION -->
+            <button id="btnDeleteCategory" onclick="deleteActiveCategory()" class="smooth-btn px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm" title="Delete all items in currently selected category">
+              [DELETE CATEGORY]
+            </button>
+            <button onclick="deleteAllCargo()" class="smooth-btn px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 border border-slate-200 text-slate-500 hover:text-rose-700 text-[11px]" title="Wipe entire ship cargo">
+              [Wipe All]
             </button>
           </div>
         </div>
 
-        <!-- Items Table -->
-        <div class="max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 divide-y divide-slate-200">
-          <table class="w-full text-left text-xs font-mono">
+        <!-- Dynamic Category Summary Pills -->
+        <div id="manifestCategoryBadges" class="flex flex-wrap items-center gap-1.5 text-[11px] font-mono"></div>
+
+        <!-- Items Table: Fully Scrollable on Mobile -->
+        <div class="max-h-80 overflow-y-auto overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 divide-y divide-slate-200">
+          <table class="min-w-[700px] w-full text-left text-xs font-mono">
             <thead class="bg-white text-slate-600 sticky top-0 border-b border-slate-200 text-[11px] shadow-sm">
               <tr>
                 <th class="py-2.5 px-3 w-12 text-slate-400">#</th>
                 <th class="py-2.5 px-3 w-32">Category</th>
                 <th class="py-2.5 px-3">Item Name</th>
-                <th class="py-2.5 px-3 text-right">Est. Value</th>
-                <th class="py-2.5 px-3 text-center">Spatial Coordinates</th>
-                <th class="py-2.5 px-3 text-center w-36">Actions</th>
+                <th class="py-2.5 px-3 text-right w-24">Est. Value</th>
+                <th class="py-2.5 px-3 text-center w-48">Spatial Coordinates</th>
+                <th class="py-2.5 px-3 text-center w-52">Actions</th>
               </tr>
             </thead>
             <tbody id="manifestTableBody"></tbody>
@@ -447,6 +461,8 @@
       sessionStorage.removeItem('MORTAL_CUSTOM_SAVE');
       const input = document.getElementById('mainFileInput');
       if (input) input.value = '';
+      const badges = document.getElementById('manifestCategoryBadges');
+      if (badges) badges.innerHTML = '';
       renderUI();
     }
 
@@ -516,7 +532,7 @@
         document.getElementById('dispActiveFile').className = "text-slate-400 font-bold text-sm mt-0.5 truncate";
         document.getElementById('dispSaveDate').innerText = "Standby";
         document.getElementById('statMoney').innerText = "--";
-        document.getElementById('statMoney').className = "text-slate-400 font-bold text-base mt-0.5";
+        document.getElementById('statMoney').className = "text-slate-400 font-bold text-lg mt-0.5";
         document.getElementById('statQuota').innerText = "--";
         document.getElementById('statQuota').className = "text-slate-400 font-bold text-sm mt-0.5";
         document.getElementById('statDeadline').innerText = "--";
@@ -549,7 +565,7 @@
       document.getElementById('dispActiveFile').className = "text-sky-700 font-bold text-sm mt-0.5 truncate";
       document.getElementById('dispSaveDate').innerText = currentSave.saveDate || "16.11.2026 05.44";
       document.getElementById('statMoney').innerText = `$${(currentSave.shopMoney || 0).toLocaleString()}`;
-      document.getElementById('statMoney').className = "text-amber-800 font-bold text-base mt-0.5";
+      document.getElementById('statMoney').className = "text-amber-900 font-bold text-lg mt-0.5";
       document.getElementById('statQuota').innerText = `${currentSave.collectedQuota || 0} / ${currentSave.targetQuota || 320}`;
       document.getElementById('statQuota').className = "text-sky-700 font-bold text-sm mt-0.5";
       document.getElementById('statDeadline').innerText = `${currentSave.remainingDays !== undefined ? currentSave.remainingDays : 2} Days Remaining`;
@@ -739,6 +755,117 @@
       alert(`Deduplication finished! Removed ${removedCount} duplicate items. Ship cargo now holds ${uniqueItems.length} unique items.`);
     }
 
+    // Category Labels Dictionary
+    function getCategoryLabel(cat) {
+      const map = {
+        'HIGH_VALUE': 'High Value',
+        'VALUABLE': 'Valuable',
+        'SCRAP': 'Scrap',
+        'CONSUMABLE': 'Consumable / Candy',
+        'EQUIPMENT': 'Equipment / Jetpack',
+        'WEAPON': 'Weapon',
+        'FUN': 'Fun'
+      };
+      return map[cat] || cat;
+    }
+
+    function setCategoryFilter(cat) {
+      const select = document.getElementById('manifestCategoryFilter');
+      if (select) {
+        select.value = cat;
+        onCategoryFilterChanged();
+      }
+    }
+
+    function onCategoryFilterChanged() {
+      updateCategoryDeleteButton();
+      renderManifest();
+    }
+
+    function updateCategoryDeleteButton() {
+      const btn = document.getElementById('btnDeleteCategory');
+      if (!btn) return;
+      const catFilter = document.getElementById('manifestCategoryFilter').value;
+      if (catFilter === 'ALL') {
+        btn.innerText = '[DELETE BY CATEGORY...]';
+        btn.className = "smooth-btn px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 border border-slate-200 text-slate-700 hover:text-rose-700 font-semibold";
+        btn.title = "Select a category to delete from cargo";
+      } else {
+        const count = currentSave && currentSave.items ? currentSave.items.filter(it => getItemMeta(it.name).cat === catFilter).length : 0;
+        btn.innerText = `[DELETE CATEGORY (${catFilter} - ${count})]`;
+        btn.className = "smooth-btn px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm";
+        btn.title = `Delete all ${count} items in category ${getCategoryLabel(catFilter)}`;
+      }
+    }
+
+    // Delete items by category
+    function deleteActiveCategory(catKey) {
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
+        alert('Ship cargo is already empty.');
+        return;
+      }
+
+      const selectedCat = catKey || document.getElementById('manifestCategoryFilter').value;
+      if (selectedCat === 'ALL') {
+        const catCounts = {};
+        currentSave.items.forEach(it => {
+          const cat = getItemMeta(it.name).cat;
+          catCounts[cat] = (catCounts[cat] || 0) + 1;
+        });
+
+        const catEntries = Object.entries(catCounts);
+        if (catEntries.length === 0) {
+          alert('No items in cargo.');
+          return;
+        }
+
+        const catList = catEntries.map(([c, cnt]) => `${c}: ${cnt} items`).join('\n• ');
+        const chosen = prompt(`Select which category to delete:\n\nAvailable categories in cargo:\n• ${catList}\n\nEnter the category name (e.g. CONSUMABLE, SCRAP, EQUIPMENT, HIGH_VALUE, VALUABLE):`);
+        if (!chosen) return;
+        deleteActiveCategory(chosen.trim().toUpperCase());
+        return;
+      }
+
+      const matching = currentSave.items.filter(it => getItemMeta(it.name).cat === selectedCat);
+      if (matching.length === 0) {
+        alert(`No items found in category "${selectedCat}".`);
+        return;
+      }
+
+      const catLabel = getCategoryLabel(selectedCat);
+      if (!confirm(`Are you sure you want to DELETE ALL ${matching.length} items in category "${catLabel}"?\n\nItems in other categories (Equipment, Scrap, etc.) will NOT be affected and remain safe in your ship.`)) {
+        return;
+      }
+
+      const kept = currentSave.items.filter(it => getItemMeta(it.name).cat !== selectedCat);
+      kept.forEach((it, idx) => { it.id = idx; });
+      const deletedCount = matching.length;
+      currentSave.items = kept;
+      targetItemIndex = Math.min(targetItemIndex, Math.max(0, currentSave.items.length - 1));
+      renderUI();
+      alert(`Category deletion complete!\nRemoved ${deletedCount} items from "${catLabel}".\nShip cargo now holds ${currentSave.items.length} items.`);
+    }
+
+    // Delete all copies of a specific item name
+    function deleteSameItem(itemName) {
+      if (!currentSave || !currentSave.items) return;
+      const upper = itemName.toUpperCase().trim();
+      const matching = currentSave.items.filter(it => it.name.toUpperCase().trim() === upper);
+      if (matching.length === 0) return;
+
+      if (!confirm(`Are you sure you want to delete all ${matching.length} copies of "${itemName}" from ship cargo?\n\nAll other items will remain safe in your ship.`)) {
+        return;
+      }
+
+      const kept = currentSave.items.filter(it => it.name.toUpperCase().trim() !== upper);
+      kept.forEach((it, idx) => { it.id = idx; });
+      const deletedCount = matching.length;
+      currentSave.items = kept;
+      targetItemIndex = Math.min(targetItemIndex, Math.max(0, currentSave.items.length - 1));
+      renderUI();
+      alert(`Removed all ${deletedCount} copies of "${itemName}".\nShip cargo now holds ${currentSave.items.length} items.`);
+    }
+
     // Delete All Cargo
     function deleteAllCargo() {
       if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
@@ -747,7 +874,7 @@
       }
 
       const count = currentSave.items.length;
-      if (!confirm(`Are you sure you want to DELETE ALL ${count} items from the ship cargo hold?\n\nThis will reset your ship inventory to completely empty.`)) {
+      if (!confirm(`[WIPE ALL CARGO]\n\nAre you sure you want to DELETE ALL ${count} items from the ship cargo hold?\n\nThis will reset your ship inventory to completely empty.`)) {
         return;
       }
 
@@ -779,7 +906,12 @@
     function renderManifest() {
       if (!currentSave || !currentSave.items) return;
       const tbody = document.getElementById('manifestTableBody');
+      const totalBadge = document.getElementById('manifestTotalBadge');
+      if (totalBadge) totalBadge.innerText = `${currentSave.items.length} Items`;
       tbody.innerHTML = '';
+
+      renderCategoryBadges();
+      updateCategoryDeleteButton();
 
       if (currentSave.items.length === 0) {
         tbody.innerHTML = `
@@ -795,6 +927,13 @@
       const query = (document.getElementById('manifestSearch').value || '').toUpperCase();
       const catFilter = document.getElementById('manifestCategoryFilter').value;
 
+      // Pre-calculate item name frequencies for instant "Delete All of This Item" action
+      const nameCounts = {};
+      currentSave.items.forEach(it => {
+        const u = it.name.toUpperCase().trim();
+        nameCounts[u] = (nameCounts[u] || 0) + 1;
+      });
+
       currentSave.items.forEach((it, idx) => {
         const meta = getItemMeta(it.name);
         if (query && !it.name.toUpperCase().includes(query)) return;
@@ -803,6 +942,11 @@
         const isTarget = (idx === targetItemIndex);
         const tr = document.createElement('tr');
         tr.className = `hover:bg-slate-100 transition ${isTarget ? 'bg-amber-50/80 border-l-4 border-amber-500' : ''}`;
+
+        const nameCount = nameCounts[it.name.toUpperCase().trim()] || 1;
+        const bulkDeleteBtn = nameCount > 1 
+          ? `<button onclick="deleteSameItem('${escapeHtml(it.name)}')" class="px-2 py-1 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 text-[10px] font-bold" title="Delete all ${nameCount} copies of ${escapeHtml(it.name)}">Del All (${nameCount})</button>`
+          : '';
 
         tr.innerHTML = `
           <td class="py-2.5 px-3 text-slate-400 font-semibold">${idx + 1}</td>
@@ -819,14 +963,42 @@
           <td class="py-2.5 px-3 text-center text-slate-500 text-[11px]">
             X: ${it.x.toFixed(2)}, Y: ${it.y.toFixed(2)}, Z: ${it.z.toFixed(2)}
           </td>
-          <td class="py-2.5 px-3 text-center space-x-1.5">
-            <button onclick="selectAsTarget(${idx})" class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-semibold">Set Anchor</button>
-            <button onclick="duplicateSingle(${idx})" class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-semibold">+1</button>
-            <button onclick="deleteSingle(${idx})" class="px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-semibold">Delete</button>
+          <td class="py-2.5 px-3 text-center space-x-1">
+            <button onclick="selectAsTarget(${idx})" class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-semibold" title="Set as Cockpit duplication anchor">Anchor</button>
+            <button onclick="duplicateSingle(${idx})" class="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-semibold" title="Duplicate 1 copy">+1</button>
+            ${bulkDeleteBtn}
+            <button onclick="deleteSingle(${idx})" class="px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-semibold" title="Delete single item">Del</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function renderCategoryBadges() {
+      const container = document.getElementById('manifestCategoryBadges');
+      if (!container) return;
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      const catMap = {};
+      currentSave.items.forEach(it => {
+        const meta = getItemMeta(it.name);
+        catMap[meta.cat] = (catMap[meta.cat] || 0) + 1;
+      });
+
+      const currentFilter = document.getElementById('manifestCategoryFilter').value;
+      let html = `<span class="text-slate-400 mr-1 text-[10px] uppercase font-semibold">Category Breakdown:</span>`;
+      for (const [cat, count] of Object.entries(catMap)) {
+        const isSelected = (currentFilter === cat);
+        html += `
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-mono ${isSelected ? 'bg-sky-100 text-sky-900 border-sky-300 font-bold' : 'bg-slate-100 text-slate-700 border-slate-200'}">
+            <button onclick="setCategoryFilter('${cat}')" class="hover:underline">${getCategoryLabel(cat)}: <strong>${count}</strong></button>
+            <button onclick="deleteActiveCategory('${cat}')" class="text-rose-600 hover:text-rose-800 hover:bg-rose-100 px-1 rounded ml-0.5 font-bold" title="Delete all ${count} items in category ${cat}">&times;</button>
+          </span>
+        `;
+      }
+      container.innerHTML = html;
     }
 
     function duplicateSingle(idx) {
@@ -850,30 +1022,35 @@
     }
 
     // Money & Quota Event Handlers
+    document.getElementById('inputMoney').oninput = (e) => {
+      if (!currentSave) return;
+      currentSave.shopMoney = Math.max(0, Math.min(999999, parseInt(e.target.value) || 0));
+      document.getElementById('statMoney').innerText = `$${(currentSave.shopMoney || 0).toLocaleString()}`;
+    };
     document.getElementById('inputMoney').onchange = (e) => {
       if (!currentSave) return;
-      currentSave.shopMoney = parseInt(e.target.value) || 0;
+      currentSave.shopMoney = Math.max(0, Math.min(999999, parseInt(e.target.value) || 0));
       renderUI();
     };
     function addMoney(amount) {
       if (!currentSave) return;
-      currentSave.shopMoney = (currentSave.shopMoney || 0) + amount;
+      currentSave.shopMoney = Math.min(999999, (currentSave.shopMoney || 0) + amount);
       renderUI();
     }
     function setMoney(amount) {
       if (!currentSave) return;
-      currentSave.shopMoney = amount;
+      currentSave.shopMoney = Math.min(999999, Math.max(0, amount));
       renderUI();
     }
 
     document.getElementById('inputCollected').onchange = (e) => {
       if (!currentSave) return;
-      currentSave.collectedQuota = parseInt(e.target.value) || 0;
+      currentSave.collectedQuota = Math.max(0, Math.min(999999, parseInt(e.target.value) || 0));
       renderUI();
     };
     document.getElementById('inputTarget').onchange = (e) => {
       if (!currentSave) return;
-      currentSave.targetQuota = parseInt(e.target.value) || 0;
+      currentSave.targetQuota = Math.max(0, Math.min(999999, parseInt(e.target.value) || 0));
       renderUI();
     };
     document.getElementById('selectDays').onchange = (e) => {
