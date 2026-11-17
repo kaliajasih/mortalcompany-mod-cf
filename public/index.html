@@ -110,6 +110,32 @@
     <!-- WORKSPACE AREA (Hidden until save file is uploaded) -->
     <div id="editorWorkspace" class="space-y-8 hidden">
 
+      <!-- DYNAMIC PHYSICS & COLLISION HAZARD BANNER -->
+      <div id="physicsAlertBanner" class="p-5 rounded-2xl border border-rose-300 bg-rose-50 text-rose-950 space-y-3 hidden shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-600 animate-ping"></span>
+            <span class="font-mono font-bold text-xs uppercase tracking-wide text-rose-900">
+              PHYSICS COLLISION WARNING // ITEM DESPAWN HAZARD DETECTED
+            </span>
+          </div>
+          <span id="physicsAlertCount" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-rose-200 text-rose-900 font-bold border border-rose-300">
+            0 Overlapping Items
+          </span>
+        </div>
+        <p id="physicsAlertText" class="text-xs text-rose-800 leading-relaxed">
+          Multiple items share identical coordinates. In Unity PhysX, overlapping colliders violently repel each other on game load, shooting items through ship geometry into the void and causing them to permanently disappear.
+        </p>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <button onclick="autoSpreadOverlaps()" class="smooth-btn px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+            <span>[AUTO-SPREAD STACK (FIX IN-GAME DESPAWN)]</span>
+          </button>
+          <button onclick="removeAllDuplicates()" class="smooth-btn px-4 py-2 rounded-xl bg-white hover:bg-rose-100 border border-rose-300 text-rose-900 font-mono text-xs font-semibold transition">
+            [REMOVE DUPLICATES (KEEP 1 EACH)]
+          </button>
+        </div>
+      </div>
+
       <!-- CORE FEATURE: COCKPIT ANCHOR DUPLICATION -->
       <div class="light-card p-6 space-y-5 border-amber-300 relative overflow-hidden bg-white">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
@@ -120,16 +146,16 @@
                 ITEM DUPLICATION (COCKPIT ANCHOR SYSTEM)
               </h2>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
-                SIMPLE ANCHOR
+                SAFE DISPERSION
               </span>
             </div>
             <p class="text-xs text-slate-600 mt-1">
-              Bring the item you want to duplicate into the <strong>Cockpit area</strong> (near the helm / front observation window) in-game, then select a duplication multiplier below.
+              Select an item below to duplicate. Clones are automatically arranged in a safe ~12 cm spiral grid across the Cockpit floor to prevent collision explosions.
             </p>
           </div>
           <div class="text-right">
             <span class="text-[11px] font-mono text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-              Cockpit Reference Anchor: X = 31.40, Y = 22.38, Z = 33.80
+              Cockpit Anchor: X = 31.40, Y = 22.38, Z = 33.80
             </span>
           </div>
         </div>
@@ -145,12 +171,12 @@
               </span>
             </div>
             <div class="flex items-baseline gap-3">
-              <div id="targetItemName" class="text-xl font-bold font-mono text-slate-900">CANDY (Item #32)</div>
+              <div id="targetItemName" class="text-xl font-bold font-mono text-slate-900">CANDY</div>
               <div id="targetItemValue" class="text-xs text-emerald-700 font-mono font-bold">Est: $15</div>
             </div>
             <div class="text-xs text-slate-600 font-mono space-y-0.5">
-              <div>Coordinates: <span id="targetItemCoords" class="text-slate-900 font-semibold">X: 40.81 m, Y: 21.17 m, Z: 29.29 m</span></div>
-              <div>Relative Location: <span id="targetItemNote" class="text-amber-700 font-semibold">Near Jetpack #1</span></div>
+              <div>Coordinates: <span id="targetItemCoords" class="text-slate-900 font-semibold">X: 31.40 m, Y: 22.38 m, Z: 33.80 m</span></div>
+              <div>Relative Location: <span id="targetItemNote" class="text-amber-700 font-semibold">Near Cockpit Helm (Ideal Anchor)</span></div>
             </div>
           </div>
 
@@ -181,6 +207,18 @@
               <button onclick="setTargetItemByName('PRO TORCH')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Pro Torch</button>
               <button onclick="setTargetItemByName('STOP SIGN')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Stop Sign</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Safe Spatial Dispersion & Physics Limits Note -->
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-slate-600 space-y-1">
+          <div class="flex items-center justify-between text-slate-800 font-bold">
+            <span>PHYSICS ENGINE SAFE LIMITS (UNITY PHYSX):</span>
+            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px]">AUTO-DISPERSION ACTIVE</span>
+          </div>
+          <div class="text-slate-500 leading-relaxed pt-0.5">
+            &bull; <strong>Identical Coords Limit:</strong> Max 1 item per exact point. Clones are automatically offset in a safe ~12 cm spiral grid across the Cockpit floor.<br>
+            &bull; <strong>Recommended Ship Cargo:</strong> Up to 100&ndash;150 total items for smooth 60 FPS mobile performance without physics lag.
           </div>
         </div>
       </div>
@@ -261,15 +299,15 @@
 
       </div>
 
-      <!-- CARGO INVENTORY MANIFEST TABLE -->
+      <!-- CARGO INVENTORY MANIFEST TABLE & BULK CONTROLS -->
       <div class="light-card p-6 space-y-4 bg-white">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div>
             <h3 class="font-bold text-sm text-slate-900 tracking-wide font-mono">SHIP CARGO MANIFEST</h3>
-            <p class="text-xs text-slate-500">Complete inventory of salvage scrap and active equipment stored aboard the spacecraft.</p>
+            <p class="text-xs text-slate-500">Complete inventory of salvage scrap and active equipment aboard the spacecraft.</p>
           </div>
-          <div class="flex items-center gap-3 text-xs font-mono">
-            <input type="text" id="manifestSearch" placeholder="Search items..." class="smooth-input py-1.5 px-3 text-xs w-48">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <input type="text" id="manifestSearch" placeholder="Search items..." class="smooth-input py-1.5 px-3 text-xs w-36">
             <select id="manifestCategoryFilter" class="smooth-input py-1.5 px-3 text-xs">
               <option value="ALL">All Categories</option>
               <option value="HIGH_VALUE">High Value</option>
@@ -278,6 +316,15 @@
               <option value="CONSUMABLE">Consumable / Candy</option>
               <option value="EQUIPMENT">Equipment / Jetpack</option>
             </select>
+            <button onclick="autoSpreadOverlaps()" class="smooth-btn px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-800 font-semibold" title="Auto-distribute overlapping items across cabin floor to prevent in-game despawn">
+              [Auto-Spread]
+            </button>
+            <button onclick="removeAllDuplicates()" class="smooth-btn px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold" title="Keep 1 of each unique item and remove extra copies">
+              [Deduplicate]
+            </button>
+            <button onclick="deleteAllCargo()" class="smooth-btn px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm" title="Delete all items from ship inventory">
+              [DELETE ALL]
+            </button>
           </div>
         </div>
 
@@ -434,12 +481,34 @@
       });
     }
 
+    // Check for severe identical-coordinate clusters
+    function detectOverlaps() {
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) return { count: 0, clusters: {} };
+      const clusters = {};
+      currentSave.items.forEach((it, idx) => {
+        const key = `${it.x.toFixed(2)}_${it.y.toFixed(2)}_${it.z.toFixed(2)}`;
+        if (!clusters[key]) clusters[key] = [];
+        clusters[key].push(idx);
+      });
+
+      let overlapCount = 0;
+      const severe = {};
+      for (const [k, list] of Object.entries(clusters)) {
+        if (list.length > 3) {
+          overlapCount += list.length;
+          severe[k] = list;
+        }
+      }
+      return { count: overlapCount, clusters: severe };
+    }
+
     function renderUI() {
       const emptyCard = document.getElementById('emptyStateCard');
       const editorWs = document.getElementById('editorWorkspace');
       const btnUnload = document.getElementById('btnUnloadSave');
       const btnExport = document.getElementById('btnExportTop');
       const exportLabel = document.getElementById('btnExportTopLabel');
+      const physicsBanner = document.getElementById('physicsAlertBanner');
 
       if (!currentSave) {
         // Standby / Empty state
@@ -464,6 +533,7 @@
         btnExport.disabled = true;
         btnExport.className = "smooth-btn px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold transition flex items-center gap-1.5 opacity-60 cursor-not-allowed";
         exportLabel.innerText = "[EXPORT SAVE]";
+        physicsBanner.classList.add('hidden');
         return;
       }
 
@@ -510,6 +580,17 @@
       // Teleporters
       updateTeleporterUI();
 
+      // Check Physics Overlaps
+      const overlapInfo = detectOverlaps();
+      if (overlapInfo.count > 3) {
+        physicsBanner.classList.remove('hidden');
+        document.getElementById('physicsAlertCount').innerText = `${overlapInfo.count} Overlapping Items`;
+        document.getElementById('physicsAlertText').innerText = 
+          `Found ${overlapInfo.count} items clustered at identical coordinates. In Unity PhysX, overlapping colliders repel each other violently on game spawn, causing items to fall below the floor and despawn. Click [Auto-Spread] below to space them out cleanly across the Cockpit floor.`;
+      } else {
+        physicsBanner.classList.add('hidden');
+      }
+
       // Target Item Card
       renderTargetItem();
 
@@ -518,7 +599,13 @@
     }
 
     function renderTargetItem() {
-      if (!currentSave || !currentSave.items || currentSave.items.length === 0) return;
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
+        document.getElementById('targetItemName').innerText = "No Items in Cargo";
+        document.getElementById('targetItemValue').innerText = "Est: $0";
+        document.getElementById('targetItemCoords').innerText = "--";
+        document.getElementById('targetItemNote').innerText = "Empty hold";
+        return;
+      }
       targetItemIndex = Math.max(0, Math.min(targetItemIndex, currentSave.items.length - 1));
       const it = currentSave.items[targetItemIndex];
       if (!it) return;
@@ -534,32 +621,140 @@
 
       // Relative description
       let note = "Main Cargo Floor";
-      if (it.x > 36.0 && it.z < 31.0) note = "Near Jetpack #1 (Exterior Wing)";
+      if (it.x > 36.0 && it.z < 31.0) note = "Catwalk / Exterior Wing";
       else if (it.z >= 33.0) note = "Near Cockpit Helm (Ideal Anchor)";
       else if (it.x < 31.2 && it.z <= 31.5) note = "Port Storage Shelves";
       document.getElementById('targetItemNote').innerText = note;
     }
 
+    // Safe Golden-Ratio Spiral Distribution around Anchor
     function cloneTargetItem(count) {
-      if (!currentSave || !currentSave.items || currentSave.items.length === 0) return;
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
+        alert('Please select or upload a save file with items first.');
+        return;
+      }
       const it = currentSave.items[targetItemIndex];
       if (!it) return;
 
+      // Base anchor: use Cockpit reference anchor if item is outside or unsafe
+      let baseX = it.x;
+      let baseY = it.y;
+      let baseZ = it.z;
+      if (baseZ < 32.5 || baseX > 35.0 || baseX < 30.0) {
+        baseX = 31.40;
+        baseY = 22.38;
+        baseZ = 33.80;
+      }
+
+      const startCount = currentSave.items.length;
       for (let i = 0; i < count; i++) {
+        const step = startCount + i;
+        const angle = step * 2.399963229728653;
+        const r = Math.min(0.65, 0.08 * Math.sqrt(i + 1));
+        const dx = r * Math.cos(angle);
+        const dz = r * Math.sin(angle);
+        const dy = (i % 6) * 0.035;
+
         currentSave.items.push({
           id: currentSave.items.length,
           name: it.name,
-          x: it.x,
-          y: it.y,
-          z: it.z,
+          x: parseFloat((baseX + dx).toFixed(4)),
+          y: parseFloat((baseY + dy).toFixed(4)),
+          z: parseFloat((baseZ + dz).toFixed(4)),
           rx: it.rx || 0,
-          ry: it.ry || 0,
+          ry: parseFloat(((it.ry || 0) + (i * 37) % 360).toFixed(1)),
           rz: it.rz || 0
         });
       }
 
       renderUI();
-      alert(`Successfully duplicated ${it.name} (+${count}x)!\nTotal items in ship cargo: ${currentSave.items.length}.`);
+      alert(`Successfully duplicated ${it.name} (+${count}x) with safe ~12cm spatial dispersion!\nTotal ship cargo: ${currentSave.items.length} items.`);
+    }
+
+    // Auto-Spread Overlapping Items: eliminates collision explosions
+    function autoSpreadOverlaps() {
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) return;
+      const overlapInfo = detectOverlaps();
+      if (overlapInfo.count === 0) {
+        alert('No overlapping items detected. Coordinates are already safe!');
+        return;
+      }
+
+      const cockpitX = 31.40;
+      const cockpitY = 22.38;
+      const cockpitZ = 33.80;
+      let spreadCount = 0;
+
+      for (const [coordKey, idxList] of Object.entries(overlapInfo.clusters)) {
+        idxList.forEach((itemIdx, step) => {
+          if (step === 0) return; // Keep 1 at the original position
+          const angle = (spreadCount + 1) * 2.399963229728653;
+          const r = Math.min(0.65, 0.08 * Math.sqrt(spreadCount + 1));
+          const dx = r * Math.cos(angle);
+          const dz = r * Math.sin(angle);
+          const dy = (spreadCount % 6) * 0.035;
+
+          currentSave.items[itemIdx].x = parseFloat((cockpitX + dx).toFixed(4));
+          currentSave.items[itemIdx].y = parseFloat((cockpitY + dy).toFixed(4));
+          currentSave.items[itemIdx].z = parseFloat((cockpitZ + dz).toFixed(4));
+          spreadCount++;
+        });
+      }
+
+      renderUI();
+      alert(`Auto-spread complete! Successfully re-spaced ${spreadCount} overlapping items across the Cockpit floor.\nItems will now load gently without physics explosion or despawning.`);
+    }
+
+    // Deduplicate: Keep 1 of each unique item, delete redundant duplicates
+    function removeAllDuplicates() {
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) return;
+      const seen = new Set();
+      const uniqueItems = [];
+      let removedCount = 0;
+
+      currentSave.items.forEach(it => {
+        const key = it.name.toUpperCase().trim();
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueItems.push(it);
+        } else {
+          removedCount++;
+        }
+      });
+
+      if (removedCount === 0) {
+        alert('All cargo items are already unique. No duplicates to remove.');
+        return;
+      }
+
+      if (!confirm(`Found ${removedCount} duplicate items. Remove them and keep 1 copy of each unique item?`)) {
+        return;
+      }
+
+      // Re-index
+      uniqueItems.forEach((it, idx) => { it.id = idx; });
+      currentSave.items = uniqueItems;
+      targetItemIndex = 0;
+      renderUI();
+      alert(`Deduplication finished! Removed ${removedCount} duplicate items. Ship cargo now holds ${uniqueItems.length} unique items.`);
+    }
+
+    // Delete All Cargo
+    function deleteAllCargo() {
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
+        alert('Ship cargo is already empty.');
+        return;
+      }
+
+      const count = currentSave.items.length;
+      if (!confirm(`Are you sure you want to DELETE ALL ${count} items from the ship cargo hold?\n\nThis will reset your ship inventory to completely empty.`)) {
+        return;
+      }
+
+      currentSave.items = [];
+      targetItemIndex = 0;
+      renderUI();
+      alert(`All ${count} items have been deleted. Ship cargo hold is now clean and empty.`);
     }
 
     function setTargetItemByName(namePart) {
@@ -585,6 +780,17 @@
       if (!currentSave || !currentSave.items) return;
       const tbody = document.getElementById('manifestTableBody');
       tbody.innerHTML = '';
+
+      if (currentSave.items.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-8 text-center text-slate-400 font-mono text-xs">
+              Cargo hold is empty. No items aboard the ship.
+            </td>
+          </tr>
+        `;
+        return;
+      }
 
       const query = (document.getElementById('manifestSearch').value || '').toUpperCase();
       const catFilter = document.getElementById('manifestCategoryFilter').value;
@@ -626,18 +832,20 @@
     function duplicateSingle(idx) {
       if (!currentSave || !currentSave.items) return;
       const it = currentSave.items[idx];
-      currentSave.items.push(JSON.parse(JSON.stringify(it)));
+      const clone = JSON.parse(JSON.stringify(it));
+      // Add small offset so it doesn't share exact point
+      clone.id = currentSave.items.length;
+      clone.x = parseFloat((clone.x + 0.08).toFixed(4));
+      clone.y = parseFloat((clone.y + 0.035).toFixed(4));
+      clone.z = parseFloat((clone.z + 0.08).toFixed(4));
+      currentSave.items.push(clone);
       renderUI();
     }
 
     function deleteSingle(idx) {
       if (!currentSave || !currentSave.items) return;
-      if (currentSave.items.length <= 1) {
-        alert('Ship inventory must contain at least 1 item.');
-        return;
-      }
       currentSave.items.splice(idx, 1);
-      targetItemIndex = Math.min(targetItemIndex, currentSave.items.length - 1);
+      targetItemIndex = Math.min(targetItemIndex, Math.max(0, currentSave.items.length - 1));
       renderUI();
     }
 
