@@ -204,10 +204,11 @@
 
             <!-- Quick Item Selection Chips -->
             <div class="pt-1 flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
-              <span class="text-slate-500 mr-1">Quick Select Target:</span>
+              <span class="text-slate-500 mr-1">Quick Select / Add:</span>
               <button onclick="setTargetItemByName('CANDY')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Candy</button>
               <button onclick="setTargetItemByName('JETPACK')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Jetpack</button>
               <button onclick="setTargetItemByName('APPARATUS')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Apparatus</button>
+              <button onclick="setTargetItemByName('BIG GEAR')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Big Gear</button>
               <button onclick="setTargetItemByName('PRO TORCH')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Pro Torch</button>
               <button onclick="setTargetItemByName('WALKIE')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Walkie</button>
               <button onclick="setTargetItemByName('STOP SIGN')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700">Stop Sign</button>
@@ -218,12 +219,12 @@
         <!-- Safe Spatial Dispersion & Physics Limits Note -->
         <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-slate-600 space-y-1">
           <div class="flex items-center justify-between text-slate-800 font-bold">
-            <span>PHYSICS ENGINE SAFE LIMITS (UNITY PHYSX):</span>
-            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px]">AUTO-DISPERSION ACTIVE</span>
+            <span>PHYSICS ENGINE &amp; GAME LIMITS (APK CALIBRATION):</span>
+            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px]">ANTI-COLLISION ACTIVE</span>
           </div>
           <div class="text-slate-500 leading-relaxed pt-0.5">
-            &bull; <strong>Identical Coords Limit:</strong> Max 1 item per exact point. Clones are automatically offset in a safe ~12 cm spiral grid across the Cockpit floor.<br>
-            &bull; <strong>Recommended Ship Cargo:</strong> Up to 100&ndash;150 total items for smooth 60 FPS mobile performance without physics lag.
+            &bull; <strong>Large Scrap Models:</strong> Bulky/heavy items (Apparatus, Big Gear, Jetpack, Stop Sign) use calibrated &ge; 35 cm clearance to prevent Unity PhysX floor-tunneling into the void.<br>
+            &bull; <strong>Game Engine Hard Limit:</strong> Mobile client throws fatal exception if cargo exceeds 500 items (<code>"Attempted to sync more than 500 scrap values which is not allowed"</code>). Keep total cargo &le; 150 items for smooth 60 FPS mobile performance.
           </div>
         </div>
       </div>
@@ -468,13 +469,17 @@
     }
 
     const ITEM_VALUES = {
-      'APPARATUS': { val: 80, cat: 'HIGH_VALUE', color: '#9333ea', bg: '#faf5ff', border: '#d8b4fe' },
-      'JETPACK': { val: 700, cat: 'EQUIPMENT', color: '#0284c7', bg: '#f0f9ff', border: '#7dd3fc' },
+      'APPARATUS': { val: 80, cat: 'HIGH_VALUE', color: '#9333ea', bg: '#faf5ff', border: '#d8b4fe', bulky: true },
+      'BIG GEAR': { val: 40, cat: 'SCRAP', color: '#ca8a04', bg: '#fefce8', border: '#fde047', bulky: true },
+      'JETPACK': { val: 700, cat: 'EQUIPMENT', color: '#0284c7', bg: '#f0f9ff', border: '#7dd3fc', bulky: true },
+      'STOP SIGN': { val: 35, cat: 'WEAPON', color: '#dc2626', bg: '#fef2f2', border: '#fca5a5', bulky: true },
+      'V-TYPE ENGINE': { val: 56, cat: 'SCRAP', color: '#ea580c', bg: '#fff7ed', border: '#fdba74', bulky: true },
+      'LARGE AXLE': { val: 52, cat: 'SCRAP', color: '#ea580c', bg: '#fff7ed', border: '#fdba74', bulky: true },
+      'CASH REGISTER': { val: 120, cat: 'VALUABLE', color: '#d97706', bg: '#fffbeb', border: '#fcd34d', bulky: true },
+      'FANCY LAMP': { val: 95, cat: 'VALUABLE', color: '#d97706', bg: '#fffbeb', border: '#fcd34d', bulky: true },
       'PRO TORCH': { val: 25, cat: 'EQUIPMENT', color: '#0284c7', bg: '#f0f9ff', border: '#7dd3fc' },
       'BRASS BELL': { val: 60, cat: 'VALUABLE', color: '#d97706', bg: '#fffbeb', border: '#fcd34d' },
       'RUBBER DUCK': { val: 50, cat: 'VALUABLE', color: '#0284c7', bg: '#f0f9ff', border: '#7dd3fc' },
-      'BIG GEAR': { val: 40, cat: 'SCRAP', color: '#ca8a04', bg: '#fefce8', border: '#fde047' },
-      'STOP SIGN': { val: 35, cat: 'WEAPON', color: '#dc2626', bg: '#fef2f2', border: '#fca5a5' },
       'KETTLE': { val: 32, cat: 'SCRAP', color: '#2563eb', bg: '#eff6ff', border: '#93c5fd' },
       'BOTTLES': { val: 28, cat: 'SCRAP', color: '#059669', bg: '#ecfdf5', border: '#6ee7b7' },
       'GEAR': { val: 25, cat: 'SCRAP', color: '#ea580c', bg: '#fff7ed', border: '#fdba74' },
@@ -494,31 +499,47 @@
       return { val: 20, cat: 'SCRAP', color: '#0284c7', bg: '#f0f9ff', border: '#7dd3fc' };
     }
 
+    function isBulkyItem(name) {
+      const meta = getItemMeta(name);
+      return !!meta.bulky;
+    }
+
     function escapeHtml(str) {
       return String(str || '').replace(/[&<>"']/g, function(s) {
         return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s];
       });
     }
 
-    // Check for severe identical-coordinate clusters
+    // Check for severe identical-coordinate clusters and bulky scrap collision hazards
     function detectOverlaps() {
-      if (!currentSave || !currentSave.items || currentSave.items.length === 0) return { count: 0, clusters: {} };
+      if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
+        return { count: 0, clusters: {}, hasBulkyOverlap: false };
+      }
       const clusters = {};
+      let hasBulkyOverlap = false;
+
       currentSave.items.forEach((it, idx) => {
-        const key = `${it.x.toFixed(2)}_${it.y.toFixed(2)}_${it.z.toFixed(2)}`;
+        const isBulky = isBulkyItem(it.name);
+        // Bulky items use wider grid clustering (0.1m threshold) to catch close-proximity physics explosions
+        const roundFactor = isBulky ? 1 : 2;
+        const key = `${it.x.toFixed(roundFactor)}_${it.y.toFixed(roundFactor)}_${it.z.toFixed(roundFactor)}`;
         if (!clusters[key]) clusters[key] = [];
         clusters[key].push(idx);
+        if (isBulky && clusters[key].length > 1) {
+          hasBulkyOverlap = true;
+        }
       });
 
       let overlapCount = 0;
       const severe = {};
       for (const [k, list] of Object.entries(clusters)) {
-        if (list.length > 3) {
+        const containsBulky = list.some(idx => isBulkyItem(currentSave.items[idx]?.name));
+        if (list.length > 2 || (containsBulky && list.length > 1)) {
           overlapCount += list.length;
           severe[k] = list;
         }
       }
-      return { count: overlapCount, clusters: severe };
+      return { count: overlapCount, clusters: severe, hasBulkyOverlap };
     }
 
     function renderUI() {
@@ -572,8 +593,21 @@
       document.getElementById('statQuota').innerText = `${currentSave.collectedQuota || 0} / ${currentSave.targetQuota || 320}`;
       document.getElementById('statQuota').className = "text-sky-700 font-bold text-sm mt-0.5";
       document.getElementById('statDeadline').innerText = `${currentSave.remainingDays !== undefined ? currentSave.remainingDays : 2} Days Remaining`;
-      document.getElementById('statTotalItems').innerText = `${currentSave.items ? currentSave.items.length : 0} Items`;
-      document.getElementById('statTotalItems').className = "text-slate-900 font-bold text-base mt-0.5";
+
+      const cargoCount = currentSave.items ? currentSave.items.length : 0;
+      let countBadge = `${cargoCount} Items`;
+      let countColor = "text-emerald-700";
+      if (cargoCount > 450) {
+        countBadge = `${cargoCount} Items (DANGER > 450)`;
+        countColor = "text-rose-600";
+      } else if (cargoCount > 250) {
+        countBadge = `${cargoCount} Items (Heavy Load)`;
+        countColor = "text-amber-600";
+      } else {
+        countBadge = `${cargoCount} Items (Safe)`;
+      }
+      document.getElementById('statTotalItems').innerText = countBadge;
+      document.getElementById('statTotalItems').className = `${countColor} font-bold text-sm mt-0.5`;
 
       let totalVal = 0;
       if (currentSave.items) {
@@ -599,13 +633,26 @@
       // Teleporters
       updateTeleporterUI();
 
-      // Check Physics Overlaps
+      // Check Physics Overlaps & Game Engine Limits
       const overlapInfo = detectOverlaps();
-      if (overlapInfo.count > 3) {
+      if (cargoCount > 450) {
         physicsBanner.classList.remove('hidden');
-        document.getElementById('physicsAlertCount').innerText = `${overlapInfo.count} Overlapping Items`;
-        document.getElementById('physicsAlertText').innerText = 
-          `Found ${overlapInfo.count} items clustered at identical coordinates. In Unity PhysX, overlapping colliders repel each other violently on game spawn, causing items to fall below the floor and despawn. Click [Auto-Spread] below to space them out cleanly across the Cockpit floor.`;
+        document.getElementById('physicsAlertCount').innerText = `CRITICAL: ${cargoCount} Items (Game Cap: 500)`;
+        document.getElementById('physicsAlertCount').className = "text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-bold border border-rose-700";
+        document.getElementById('physicsAlertText').innerHTML = 
+          `<strong>ENGINE CAP EXCEEDED:</strong> Mortal Company Mobile enforces a hardcoded RPC scrap limit: <code>"Attempted to sync more than 500 scrap values which is not allowed"</code>. If loaded with &gt; 500 items, scrap synchronization aborts and <strong>all items disappear</strong>! Please use [Remove Duplicates] or delete excess items below.`;
+      } else if (overlapInfo.count > 0 || overlapInfo.hasBulkyOverlap) {
+        physicsBanner.classList.remove('hidden');
+        document.getElementById('physicsAlertCount').className = "text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-rose-200 text-rose-900 font-bold border border-rose-300";
+        if (overlapInfo.hasBulkyOverlap) {
+          document.getElementById('physicsAlertCount').innerText = `Bulky Scrap Collision Hazard`;
+          document.getElementById('physicsAlertText').innerText = 
+            `Detected large scrap models (Apparatus, Big Gear, Jetpack, etc.) clustered closely together. In Unity PhysX, large collision hulls create massive depenetration forces on spawn, causing items to fall below the ship floor into the void and despawn permanently. Click [Auto-Spread] below to calibrate safe >= 35 cm clearance.`;
+        } else {
+          document.getElementById('physicsAlertCount').innerText = `${overlapInfo.count} Overlapping Items`;
+          document.getElementById('physicsAlertText').innerText = 
+            `Found ${overlapInfo.count} items clustered at identical coordinates. In Unity PhysX, overlapping colliders repel each other violently on game spawn, causing items to fall below the floor and despawn. Click [Auto-Spread] below to space them out cleanly across the Cockpit floor.`;
+        }
       } else {
         physicsBanner.classList.add('hidden');
       }
@@ -646,7 +693,7 @@
       document.getElementById('targetItemNote').innerText = note;
     }
 
-    // Safe Golden-Ratio Spiral Distribution around Anchor
+    // Safe Golden-Ratio Spiral Distribution around Anchor with Bulky-Scrap Calibration
     function cloneTargetItem(count) {
       if (!currentSave || !currentSave.items || currentSave.items.length === 0) {
         alert('Please select or upload a save file with items first.');
@@ -655,6 +702,12 @@
       const it = currentSave.items[targetItemIndex];
       if (!it) return;
 
+      if (currentSave.items.length + count > 450) {
+        alert(`Warning: Game hard limit is 500 items ("Attempted to sync more than 500 scrap values which is not allowed"). To prevent save corruption and missing items, total cargo cannot exceed 450 items.`);
+        return;
+      }
+
+      const bulky = isBulkyItem(it.name);
       // Base anchor: use Cockpit reference anchor if item is outside or unsafe
       let baseX = it.x;
       let baseY = it.y;
@@ -665,21 +718,29 @@
         baseZ = 33.80;
       }
 
+      // Spacing radius factor: bulky items get >= 0.35m clearance
+      const radiusFactor = bulky ? 0.22 : 0.08;
+      const maxRadius = bulky ? 1.6 : 0.65;
       const startCount = currentSave.items.length;
+
       for (let i = 0; i < count; i++) {
         const step = startCount + i;
         const angle = step * 2.399963229728653;
-        const r = Math.min(0.65, 0.08 * Math.sqrt(i + 1));
+        const r = Math.min(maxRadius, radiusFactor * Math.sqrt(i + 1));
         const dx = r * Math.cos(angle);
         const dz = r * Math.sin(angle);
-        const dy = (i % 6) * 0.035;
+        const dy = (i % 6) * (bulky ? 0.08 : 0.035);
+
+        // Clamp safely inside walkable cabin boundaries
+        const finalX = Math.max(30.6, Math.min(34.8, baseX + dx));
+        const finalZ = Math.max(31.2, Math.min(35.2, baseZ + dz));
 
         currentSave.items.push({
           id: currentSave.items.length,
           name: it.name,
-          x: parseFloat((baseX + dx).toFixed(4)),
+          x: parseFloat(finalX.toFixed(4)),
           y: parseFloat((baseY + dy).toFixed(4)),
-          z: parseFloat((baseZ + dz).toFixed(4)),
+          z: parseFloat(finalZ.toFixed(4)),
           rx: it.rx || 0,
           ry: parseFloat(((it.ry || 0) + (i * 37) % 360).toFixed(1)),
           rz: it.rz || 0
@@ -687,15 +748,16 @@
       }
 
       renderUI();
-      alert(`Successfully duplicated ${it.name} (+${count}x) with safe ~12cm spatial dispersion!\nTotal ship cargo: ${currentSave.items.length} items.`);
+      const clearanceText = bulky ? "calibrated >= 35cm clearance for bulky scrap model" : "safe ~12cm spatial dispersion";
+      alert(`Successfully duplicated ${it.name} (+${count}x) with ${clearanceText}!\nTotal ship cargo: ${currentSave.items.length} items.`);
     }
 
     // Auto-Spread Overlapping Items: eliminates collision explosions
     function autoSpreadOverlaps() {
       if (!currentSave || !currentSave.items || currentSave.items.length === 0) return;
       const overlapInfo = detectOverlaps();
-      if (overlapInfo.count === 0) {
-        alert('No overlapping items detected. Coordinates are already safe!');
+      if (overlapInfo.count === 0 && !overlapInfo.hasBulkyOverlap) {
+        alert('No overlapping or collision-hazard items detected. Coordinates are already safe!');
         return;
       }
 
@@ -707,21 +769,29 @@
       for (const [coordKey, idxList] of Object.entries(overlapInfo.clusters)) {
         idxList.forEach((itemIdx, step) => {
           if (step === 0) return; // Keep 1 at the original position
+          const targetItem = currentSave.items[itemIdx];
+          const bulky = isBulkyItem(targetItem ? targetItem.name : '');
+
+          const radiusFactor = bulky ? 0.22 : 0.08;
+          const maxRadius = bulky ? 1.6 : 0.65;
           const angle = (spreadCount + 1) * 2.399963229728653;
-          const r = Math.min(0.65, 0.08 * Math.sqrt(spreadCount + 1));
+          const r = Math.min(maxRadius, radiusFactor * Math.sqrt(spreadCount + 1));
           const dx = r * Math.cos(angle);
           const dz = r * Math.sin(angle);
-          const dy = (spreadCount % 6) * 0.035;
+          const dy = (spreadCount % 6) * (bulky ? 0.08 : 0.035);
 
-          currentSave.items[itemIdx].x = parseFloat((cockpitX + dx).toFixed(4));
+          const finalX = Math.max(30.6, Math.min(34.8, cockpitX + dx));
+          const finalZ = Math.max(31.2, Math.min(35.2, cockpitZ + dz));
+
+          currentSave.items[itemIdx].x = parseFloat(finalX.toFixed(4));
           currentSave.items[itemIdx].y = parseFloat((cockpitY + dy).toFixed(4));
-          currentSave.items[itemIdx].z = parseFloat((cockpitZ + dz).toFixed(4));
+          currentSave.items[itemIdx].z = parseFloat(finalZ.toFixed(4));
           spreadCount++;
         });
       }
 
       renderUI();
-      alert(`Auto-spread complete! Successfully re-spaced ${spreadCount} overlapping items across the Cockpit floor.\nItems will now load gently without physics explosion or despawning.`);
+      alert(`Auto-spread complete! Successfully re-spaced ${spreadCount} overlapping/bulky items across the Cockpit floor.\nItems will now load gently without physics explosion or despawning.`);
     }
 
     // Deduplicate: Keep 1 of each unique item, delete redundant duplicates
@@ -887,6 +957,48 @@
       alert(`All ${count} items have been deleted. Ship cargo hold is now clean and empty.`);
     }
 
+    function addNewItemToShip(name) {
+      if (!currentSave) {
+        alert('Please select or upload a save file first.');
+        return;
+      }
+      if (!currentSave.items) currentSave.items = [];
+      if (currentSave.items.length >= 450) {
+        alert('Cannot add item: Ship cargo has reached the safe limit (450 items).\nMortal Company Mobile crashes if cargo exceeds 500 items.');
+        return;
+      }
+
+      const bulky = isBulkyItem(name);
+      const cockpitX = 31.40;
+      const cockpitY = 22.38;
+      const cockpitZ = 33.80;
+      const step = currentSave.items.length + 1;
+      const angle = step * 2.399963229728653;
+      const radiusFactor = bulky ? 0.22 : 0.08;
+      const r = Math.min(1.4, radiusFactor * Math.sqrt(step));
+      const dx = r * Math.cos(angle);
+      const dz = r * Math.sin(angle);
+      const dy = (step % 6) * (bulky ? 0.08 : 0.035);
+
+      const finalX = Math.max(30.6, Math.min(34.8, cockpitX + dx));
+      const finalZ = Math.max(31.2, Math.min(35.2, cockpitZ + dz));
+
+      const cleanName = name.toUpperCase().trim();
+      currentSave.items.push({
+        id: currentSave.items.length,
+        name: cleanName,
+        x: parseFloat(finalX.toFixed(4)),
+        y: parseFloat((cockpitY + dy).toFixed(4)),
+        z: parseFloat(finalZ.toFixed(4)),
+        rx: 0,
+        ry: 0,
+        rz: 0
+      });
+      targetItemIndex = currentSave.items.length - 1;
+      renderUI();
+      alert(`Spawned new ${cleanName} in Ship Cockpit!\nSafe coordinates: X=${finalX.toFixed(2)}, Y=${(cockpitY + dy).toFixed(2)}, Z=${finalZ.toFixed(2)}.`);
+    }
+
     function setTargetItemByName(namePart) {
       if (!currentSave || !currentSave.items) return;
       const upper = namePart.toUpperCase();
@@ -897,7 +1009,9 @@
           return;
         }
       }
-      alert(`Item matching "${namePart}" not found in ship cargo.`);
+      if (confirm(`"${namePart}" is not currently in ship cargo.\n\nWould you like to spawn and add a new ${namePart} to the Ship Cockpit?`)) {
+        addNewItemToShip(namePart);
+      }
     }
 
     function selectAsTarget(idx) {
